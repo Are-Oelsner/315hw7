@@ -38,7 +38,7 @@
 \newcommand{\SCov}{\prob{Set\ Cover} }
 
 \hwheader{Homework 7}
-{YOUR NAME HERE}
+{Are Oelsner}
 {Spring 2017, Bhakta}
 {CS 315, Algorithms}
 {Due: 3:00pm Friday, Dec 8}
@@ -246,7 +246,11 @@ problems are NP-complete in class.
     $m$ subsets $S_i \subseteq E$, and ``budget'' $b$, determine if there are
     some $b$ of these subsets $\set{S_i}$ such that their union is $E$.
     \begin{solution}
-      %Your Solution Goes Here
+	    I will show that this problem is a generalization of Independent Set. \\
+	    Construct a graph with vertices for each of the n elements of E and
+	    vertices for each of the m subsets of E such that variable vertices
+	    have edges connecting them to each of the subsets they are in. 
+	    Given a graph G and an integer k, determine if G has an independent set of size $\geq$ k. 
     \end{solution}
 
     \part \prob{Longest\ s-t\ Path }:
