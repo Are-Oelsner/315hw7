@@ -90,7 +90,13 @@ problems are NP-complete in class.
   \begin{parts}
     \part Prove that $\CQ3$ is in NP.
     \begin{solution}
-      %Tour Solution Goes Here
+      We could easily check a provided solution to $\CQ3$ in linear time as the
+      maximum size clique would be 4 vertices, so if the returned clique is
+      greater than 4 we could automatically return false. If the clique is 4 or
+      fewer vertices we could check each of those vertices to make sure that
+      they are connected to each of the other vertices. In the worst case, when
+      you have a clique of size 4, you would have to check a total of 6 edges.
+      Thus, $\CQ3$ is in NP. 
     \end{solution}
 
     \part I claim that $\CQ3$ is NP-complete.
@@ -110,7 +116,10 @@ problems are NP-complete in class.
     What is wrong with the above proof?
 
     \begin{solution}
-      %Tour Solution Goes Here
+      This 'proof' attempts to show that $\CQ3$ is NP-complete by reducing it to
+      $\CQ$, however, this does not prove that $\CQ3$ is NP-complete. To show
+      that a problem is NP-complete you need to show that an NP-complete problem
+      reduces to it, not the other way around. 
     \end{solution}
 
     \part Here's a true fact that you can use without proof.
@@ -153,13 +162,28 @@ problems are NP-complete in class.
 
     What's wrong with the proof this time?
     \begin{solution}
-      %Tour Solution Goes Here
+      When you switch all of the edges to construct $G'$ the graph property of
+      each vertex having a degree of at most three would likely not be
+      maintained. 
     \end{solution}
 
     \part Describe any poly-time algorithm for $\CQ3$. Hint: How big can a
     clique get?
     \begin{solution}
-      %Tour Solution Goes Here
+      A clique in this problem can't be made up of more than four vertices so if
+      k is greater than four return false. 
+      The algorithm could first remove any vertices from the graph with degree
+      less than k-1. After those vertices and associated edges have been removed
+      you could repeat the process on the leftover vertices with their new
+      degrees, and repeat that until there are no vertices with degree less than
+      k-1 left. Then, for each of the remaining vertices check the number of
+      edges between each of its neighbors, meaning that for a vertex A with
+      neighbors B, C, and D, check the number of edges between B, C, and D. For
+      a 4 clique, return true if that number of edges is equal to 3. For a 3
+      clique return true if the number of edges is greater than or equal to 1.
+      For a 2 clique return true if it has any neighbors at all. For a 1 clique
+      return true if the graph is not empty. If none of the vertices in the
+      final graph return true, return false. 
     \end{solution}
 
   \end{parts}
@@ -246,11 +270,42 @@ problems are NP-complete in class.
     $m$ subsets $S_i \subseteq E$, and ``budget'' $b$, determine if there are
     some $b$ of these subsets $\set{S_i}$ such that their union is $E$.
     \begin{solution}
-	    I will show that this problem is a generalization of Independent Set. \\
-	    Construct a graph with vertices for each of the n elements of E and
-	    vertices for each of the m subsets of E such that variable vertices
-	    have edges connecting them to each of the subsets they are in. 
-	    Given a graph G and an integer k, determine if G has an independent set of size $\geq$ k. 
+      I will show that this problem is a generalization of Vertex Cover.\\
+
+      Reduction: Vertex Cover has inputs graph G and integer k. From G construct
+      a set E such that it contains all of the edges of G. For each vertex v in
+      G construct a subset $S_v$ of E such that each subset $S_v$ contains every
+      edge connected to v. Run the algorithm on following input with values of k
+      from 1 to k ($E, S, k$), returning true if the union is E, or false after
+      unsuccessfully trying with b = k. 
+
+
+      \textbf{\underline{Wrong Answer}: Not related to question but this shows
+      reduction from Set Cover to ILP}\\
+      I will show that Integer Linear Programming is a generalization of Set
+      Cover.\\
+      I would construct a matrix A such that the n rows represent each of the
+      elements in E and the m columns represent each of the subsets. If the row
+      element is present in the column subset it is set to 1, otherwise 0. \\
+      The optimization problem would attempt to solve the equation below such
+      that each of the n indices of x can have a value of either 1 or 0,
+      representing if that subset is included or not. b is a vector of size m
+      with every index equal to 1 showing that each element needs to be included
+      at least once.\\
+      $Ax \geq b$\\
+      The end goal is to find an assignment of 1 and 0 values to the indices of
+      x such that the sum of those values is equal to the budget b. \\
+
+      Reduction: Given an instance (E[n], S[m], b) of Set Cover, create the
+      matrix A described above and optimize the equation above with the
+      constraints discussed, so that $\sum_{i=0}^{n-1}x_i = budget\ b$. \\
+      $A_i =$ 1 if element A is in subset i, 0 if not. \\
+      For each element $A \in E$\\
+      $A_{i,0}x_0+A_{i,1}x_1+...+A_{i,n}x_{n} \geq 1$\\
+      $x_i \in Z^+,  0 \leq x_i \leq 1$\\
+
+      If you are attempting to find at most b subsets such that their union is E
+      you would optimize $\sum_{i=0}^{n-1}x_i \leq b$
     \end{solution}
 
     \part \prob{Longest\ s-t\ Path }:
@@ -258,14 +313,29 @@ problems are NP-complete in class.
     determine if $G$ has a simple path (no repeat vertices) that uses $k$ or
     more edges from $s$ to $t$.
     \begin{solution}
-      %Your Solution Goes Here
+      I will show that this problem is a generalization of Hamiltonian Paths.\\
+      A Hamiltonian path with input G returns true if there is a simple path
+      that goes through every vertex in V. Such a path would have to have a
+      length of V-1. 
+
+      Reduction: Run the Longest Path algorithm on every pair of vertices in V,
+      returning true if there is a path of size v-1. \\
+      for each vertex s in V\\
+      \ \ \ \ for each vertex t in V, $t \neq s$\\
+      \ \ \ \ \ \ \ \ return LongestPath(G, s, t, v-1)
     \end{solution}
 
     \part \TSP: Given a weighted graph $G$ and bound $B$,
     determine if there is a cycle in $G$ that visits every vertex exactly once
     and has the total sum of edge weights $\leq B$.
     \begin{solution}
-      %Your Solution Goes Here
+      I will show that this problem is a generalization of the Hamiltonian
+      Cycle.\\
+      Reduction: The Hamiltonian Cycle has input graph G.  Running \TSP on G
+      with $B = \infty$ will return true if a cycle is present that visits every
+      vertex exactly once, which is by definition a Hamiltonian cycle. This
+      shows that the Hamiltonian Cycle reduces to this problem and thus this
+      problem is NP-complete. 
     \end{solution}
 
     \part \prob{Degree\ Restricted\ MST }: Given an undirected graph $G =
@@ -366,6 +436,42 @@ problems are NP-complete in class.
   for Decision \SAT to determine a valid assignment for each variable, one at
   a time.
   \begin{solution}
+    Given a decision \SAT algorithm that has as input a list V of variables
+    initially set to true and a list C of clauses. This algorithm will determine
+    an assignment of values that satisfies the SAT problem. \\
+
+    S-SAT(V, C)\\
+    v $\gets$ V.remove(0)\\
+    C1 $\gets$ C\\
+    for(clause c : C1)\\
+    \ \ \ \ c.remove(v) //removes v if it is present\\
+    $v \gets false$\\
+    $C2 \gets C$\\
+    for(clause c : C2)\\
+    \ \ \ \ c.remove(v) //removes v if it is present\\
+
+    if(D-SAT(V, C1))\\
+    \ \ \ \ return S-SAT(V, C1)\\
+    if(D-SAT(V, C2))\\
+    \ \ \ \ return S-SAT(V, C2)\\
+    return false\\
+
+    This algorithm recursively checks variable assignments one at a time to
+    determine an assignment of values that satisfies SAT.  
+    %TODO%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %TODO%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %TODO%%%%%%%FINISH%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %TODO%%%%%%%FINISH%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %TODO%%%%%%%FINISH%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %TODO%%%%%%%FINISH%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %TODO%%%%%%%FINISH%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %TODO%%%%%%%FINISH%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %TODO%%%%%%%FINISH%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %TODO%%%%%%%FINISH%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %TODO%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %TODO%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %TODO%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
   \end{solution}
 
   
@@ -379,7 +485,22 @@ problems are NP-complete in class.
   $[7,13]$, $[2,3,6,9]$ each with sum $20$. The list $A = [4,6,8,12]$ cannot be
   partitioned into two equal pieces.
   \begin{solution}
-    %Your Solution Goes Here
+    I will show that \SSM reduces to this problem.\\
+    \SSM has an input list A with sum S and a target T. 
+    By adding an extra integer to A with a value of S-2T and passing that into
+    this algorithm we have it check if the new A with sum S+(S-2T) can be
+    partitioned into two disjoint lists each with sum S-T. If such a
+    partitioning exists, this means that by removing the added integer we can
+    reduce one of the halves to (S-T)-(S-2T), which is T, and the other half is
+    equal to S-T, giving us the solution to \SSM and showing that the problem is
+    NP-complete. 
+
+
+    \textbf{\underline{Wrong answer}: Shows reduction in the opposite direction}\\
+    This can be done simply by performing \SSM on A with a target of the sum of
+    A divided by 2. If this is possible then the subsets not included will also
+    have a value of sum A/2. Since a NP-complete problem reduces to this problem
+    we know that this problem is also NP-complete. 
   \end{solution}
 
   \question (Bonus) Consider the following problem.
